@@ -2,6 +2,13 @@
 
 A sample repository showing a minimal Terraform Checkly setup.
 
+## Prerequisites
+
+You will need:
+
+1. A recent version of [HashiCorp Terraform](https://terraform.io) installed.
+2. An account on [Checkly](https://checklyhq.com)
+
 ## Setup
 
 First, you will need an API Key for your Checkly user. Go to the [API keys tab](https://app.checklyhq.com/settings/user/api-keys) in your user settings and click `Create API key`. 
