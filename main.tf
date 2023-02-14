@@ -83,7 +83,6 @@ resource "checkly_check_group" "group-1" {
   ]
   concurrency = 3
   double_check              = true
-  use_global_alert_settings = false
 
   alert_channel_subscription {
     channel_id = checkly_alert_channel.email_ac.id
@@ -100,16 +99,16 @@ resource "checkly_alert_channel" "email_ac" {
   send_degraded = false
 }
 
-resource "checkly_dashboard" "example-dashboard" {
-  custom_url      = "checkly"
-  custom_domain   = "status.example.com"
-  logo            = "https://www.checklyhq.com/logo.png"
-  header          = "Public dashboard"
-  refresh_rate    = 60
-  paginate        = false
-  pagination_rate = 30
-  hide_tags       = false
-}
+# resource "checkly_dashboard" "example-dashboard" {
+#   custom_url      = "checkly"
+#   custom_domain   = "status.example.com"
+#   logo            = "https://www.checklyhq.com/logo.png"
+#   header          = "Public dashboard"
+#   refresh_rate    = 60
+#   paginate        = false
+#   pagination_rate = 30
+#   hide_tags       = false
+# }
 
 resource "checkly_maintenance_windows" "maintenance-1" {
   name            = "Maintenance Windows"
