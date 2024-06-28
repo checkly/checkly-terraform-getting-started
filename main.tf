@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     checkly = {
-      source = "checkly/checkly"
+      source  = "checkly/checkly"
       version = "~> 1.0"
     }
   }
@@ -11,16 +11,23 @@ variable "checkly_api_key" {}
 variable "checkly_account_id" {}
 
 provider "checkly" {
-  api_key = var.checkly_api_key
+  api_key    = var.checkly_api_key
   account_id = var.checkly_account_id
 }
 
 resource "checkly_check" "api-check-1" {
-  name                      = "Example API check"
-  type                      = "API"
-  activated                 = true
-  frequency                 = 1
-  double_check              = true
+  name      = "Example API check"
+  type      = "API"
+  activated = true
+  frequency = 1
+
+  retry_strategy {
+    type                 = "FIXED"
+    base_backoff_seconds = 60
+    max_duration_seconds = 600
+    max_retries          = 3
+    same_region          = false
+  }
 
   locations = [
     "us-west-1",
@@ -42,12 +49,19 @@ resource "checkly_check" "api-check-1" {
 }
 
 resource "checkly_check" "browser-check-1" {
-  name                      = "Example browser check"
-  type                      = "BROWSER"
-  activated                 = true
-  frequency                 = 10
-  double_check              = true
-  
+  name      = "Example browser check"
+  type      = "BROWSER"
+  activated = true
+  frequency = 10
+
+  retry_strategy {
+    type                 = "FIXED"
+    base_backoff_seconds = 60
+    max_duration_seconds = 600
+    max_retries          = 3
+    same_region          = false
+  }
+
   locations = [
     "us-west-1",
     "eu-central-1"
@@ -70,6 +84,18 @@ await browser.close();
 EOT
 }
 
+resource "checkly_heartbeat" "example-heartbeat" {
+  name      = "Example heartbeat check"
+  activated = true
+  heartbeat {
+    period      = 7
+    period_unit = "days"
+    grace       = 1
+    grace_unit  = "days"
+  }
+  use_global_alert_settings = true
+}
+
 resource "checkly_check_group" "group-1" {
   name      = "Example group"
   activated = true
@@ -82,7 +108,6 @@ resource "checkly_check_group" "group-1" {
     "eu-west-1",
   ]
   concurrency = 3
-  double_check              = true
 
   alert_channel_subscription {
     channel_id = checkly_alert_channel.email_ac.id
@@ -95,7 +120,7 @@ resource "checkly_alert_channel" "email_ac" {
     address = "john@example.com"
   }
   send_recovery = true
-  send_failure = true
+  send_failure  = true
   send_degraded = false
 }
 
@@ -108,6 +133,11 @@ resource "checkly_alert_channel" "email_ac" {
 #   paginate        = false
 #   pagination_rate = 30
 #   hide_tags       = false
+# }
+
+# resource "checkly_private_location" "location" {
+#   name          = "New Private Location"
+#   slug_name     = "new-private-location"
 # }
 
 resource "checkly_maintenance_windows" "maintenance-1" {
@@ -124,5 +154,5 @@ resource "checkly_maintenance_windows" "maintenance-1" {
 
 resource "checkly_snippet" "example-1" {
   name   = "Example snippet"
-  script   = "console.log('test');"
+  script = "console.log('test');"
 }
